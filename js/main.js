@@ -30,29 +30,33 @@ video.addEventListener("playing", () => {
       .withFaceLandmarks()
       .withFaceExpressions()
       .withAgeAndGender();
-    const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
+    const resizedDetections = faceapi.resizeResults(detections, displaySize);
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 
     faceapi.draw.drawDetections(canvas, resizedDetections);
-    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+    //faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
     faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-
-    const age = resizedDetections[0].age;
+    const age = resizedDetections[0].age; // resizedDetections 為判斷完的array
     const interpolatedAge = interpolateAgePredictions(age);
+
     const bottomRight = {
       x: resizedDetections[0].detection.box.bottomRight.x - 50,
       y: resizedDetections[0].detection.box.bottomRight.y
     };
 
-    new faceapi.draw.DrawTextField(
-      [`${faceapi.utils.round(interpolatedAge, 0)} years`],
+    /*new faceapi.draw.DrawTextField( // 顯示的框框
+      [`${faceapi.utils.round(interpolatedAge, 0)} years`], // 年齡
       bottomRight
-    ).draw(canvas);
+    ).draw(canvas);*/
+
+    document.querySelector('#printage').innerHTML = "Age : " + Math.round(interpolatedAge) + " years"; // 傳值到html
   }, 100);
+
+
 });
 
-function interpolateAgePredictions(age) {
+function interpolateAgePredictions(age) { 
   predictedAges = [age].concat(predictedAges).slice(0, 30);
   const avgPredictedAge =
     predictedAges.reduce((total, a) => total + a) / predictedAges.length;
